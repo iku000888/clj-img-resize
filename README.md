@@ -13,11 +13,11 @@ There are two functions that can be used in the following fashion:
 
 (-> (io/file "test/FoodBomb夜食テロ.JPG") ;;Any image
     (i/scale-image-to-exact-dimension 20 20 "jpeg") ;; Width, Height, and output file format such as jpeg/gif/png
-    (io/copy (io/file "20by20.jpeg")) ;; Write the resulting sream into a file
+    (io/copy (io/file "20by20.jpeg")) ;; Write the resulting stream into a file
     )
 ```
 
-`scale-image-to-exact-dimension` will force the resulting image to be the specified dimensions in pixels, ignoring the original proportion.
+`scale-image-to-exact-dimension` will force the resulting image to be the specified width and height in pixels, ignoring the original proportion.
 
 `scale-image-to-dimension-limit` will change the dimension of the image so that:
 
