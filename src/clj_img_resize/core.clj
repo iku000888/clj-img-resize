@@ -3,11 +3,12 @@
   (:import java.awt.Image
            java.awt.image.BufferedImage
            java.io.ByteArrayOutputStream
-           javax.imageio.ImageIO))
+           javax.imageio.ImageIO
+           sun.awt.image.ToolkitImage))
 
 (defn get-image-dimentions
   "This is public because it is useful for testing and debugging"
-  [ buffered-image]
+  [^BufferedImage buffered-image]
   {:width (.getWidth buffered-image)
    :height (.getHeight buffered-image)})
 
@@ -20,7 +21,7 @@
    ensures the image is within the specified limit and that retains the width-height ratio"
   [{:keys [width height max-width max-height] :as args}]
   (let [{:keys [width-ratio height-ratio]} (compare-image-dimensions-as-ratios args)
-        template-fn (fn [buffered-image w h]
+        template-fn (fn [^BufferedImage buffered-image w h]
                       (.getScaledInstance buffered-image w h (Image/SCALE_FAST)))]
     (cond
       ;; Both width and heights are within the limit
@@ -52,13 +53,13 @@
    The w and h are specified in pixels.
    file-type is a string of of the desired output file type such as \"jpeg\" \"png\" or \"
    Use this if you know the exact end dimension of the end result you desire"
-  [input-stream-or-file w h file-type]
+  [input-stream-or-file w h ^String file-type]
   (with-open [out-stream (ByteArrayOutputStream.)]
-    (let [image (ImageIO/read input-stream-or-file)
-          scaled-instance (.getScaledInstance image w h (Image/SCALE_FAST))
-          buffer (BufferedImage. (.getWidth scaled-instance)
-                                 (.getHeight scaled-instance)
-                                 BufferedImage/TYPE_INT_RGB)]
+    (let [^BufferedImage image (ImageIO/read input-stream-or-file)
+          ^ToolkitImage scaled-instance (.getScaledInstance image w h (Image/SCALE_FAST))
+          ^BufferedImage buffer (BufferedImage. (.getWidth scaled-instance)
+                                                (.getHeight scaled-instance)
+                                                BufferedImage/TYPE_INT_RGB)]
       (-> (.createGraphics buffer)
           (.drawImage scaled-instance 0 0 nil))
       (ImageIO/write buffer file-type out-stream)
@@ -75,14 +76,14 @@
 
    Use this if you want an image that is within width and height,
    while retaining its proportion."
-  [input-stream-or-file width height file-type]
+  [ input-stream-or-file width height ^String file-type]
   (with-open [out-stream (ByteArrayOutputStream.)]
     (let [image (ImageIO/read input-stream-or-file)
           scaling-fn (-> image
                          get-image-dimentions
                          (assoc :max-height height :max-width width)
                          select-how-to-scale-from-ratio)
-          scaled-instance (scaling-fn image width height)
+          ^ToolkitImage scaled-instance (scaling-fn image width height)
           buffer (BufferedImage. (.getWidth scaled-instance)
                                  (.getHeight scaled-instance)
                                  BufferedImage/TYPE_INT_RGB)]
