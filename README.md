@@ -2,6 +2,8 @@
 
 A small library to resize dimentions of images.
 
+[![Clojars Project](https://img.shields.io/clojars/v/clj-img-resize.svg)](https://clojars.org/clj-img-resize)
+
 ## Usage
 
 There are two functions that can be used in the following fashion:
